@@ -20,32 +20,33 @@ public class SpellChecker {
 
 	public static int editDistance(String s1, String s2) {
 		int d = 0;
-		return distance(s1.toLowerCase(), s2.toLowerCase(), d);
-	}
-
-	private static int distance(String s1, String s2, int d) {
-		if (s1.length() == 0) {
-			d += s2.length();
-		} else if (s2.length() == 0) {
-			d += s1.length();
-		} else if (!s1.equals(s2)) {
-			char s1Last = s1.charAt(s1.length() - 1);
-			char s2Last = s2.charAt(s2.length() - 1);
-
-			if (s1Last == s2Last) {
-				d += distance(s1.substring(0, s1.length() - 1), s2.substring(0, s2.length() - 1), d);
-			} else {
+		
+		int[][] table  = new int [s1.length()+ 1][s2.length() + 1];
+		
+		table[0][0] = 0;
+		for(int i = 0; i <= s1.length(); i++) {
+			table[i][0] = i;
+		}
+		for(int j = 0; j <= s2.length(); j++) {
+			table[0][j] = j;
+		}
+		
+		for(int i = 1; i <= s1.length(); i++) {
+			for(int j = 1; j <= s2.length(); j++) {
 				ArrayList<Integer> RCValues = new ArrayList<Integer>(3);
-
-				RCValues.add(distance(s1.substring(0, s1.length() - 1), 
-						s2.substring(0, s2.length() - 1), d) + 1);
-				RCValues.add(distance(s1, s2.substring(0, s2.length() - 1), d));
-				RCValues.add(distance(s1.substring(0, s2.length() - 1), s2, d));
-				d += Collections.min(RCValues);
-
+				int removeBothOffset = 1;
+				if(s1.charAt(i-1) == s2.charAt(j-1)) {
+					removeBothOffset = 0;
+				}
+				
+				RCValues.add(table[i-1][j] + 1);
+				RCValues.add(table[i][j-1] + 1);
+				RCValues.add(table[i - 1][j - 1] + removeBothOffset);
+				table[i][j] = Collections.min(RCValues);
 			}
 		}
-		return d;
+		
+		return table[s1.length()][s2.length()];
 	}
 
 	public static List<String> suggestWordsTest(String word, int maxEditDistance, List<String> lexicon) {

@@ -1,9 +1,20 @@
 package spellchecker;
 
+import java.util.Scanner;
+
 public class Milestone1 {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Please enter your first word ('0' to exit)");
+		String firstWord = scanner.nextLine();
+		while(!firstWord.equals("0")) {
+			System.out.println("Please enter your second word");
+			String secondWord = scanner.nextLine();
+			System.out.println(SpellChecker.editDistance(firstWord, secondWord));
+			System.out.println("Please enter your first word ('0' to exit)");
+			firstWord = scanner.nextLine();
+		}
 
 	}
 
