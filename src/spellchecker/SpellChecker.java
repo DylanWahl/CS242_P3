@@ -13,6 +13,7 @@ public class SpellChecker {
 	public SpellChecker(List<String> list) {
 		lexicon = list;
 		root = new Node();
+		buildTree();
 	}
 
 	private void buildTree() {
@@ -21,28 +22,63 @@ public class SpellChecker {
 			addWord(root, s, 0);
 		}
 	}
-	//base case........ 
+
 	private void addWord(Node root, String word, int edgeIndex) {
-		boolean edgeFound = false;
-		Node newRoot = null;
-		LinkedList<Node> rootChildren = root.getChildren();
-		
-		for (int i = 0; i < rootChildren.size() && edgeFound == false; i++) {
-			if (word.charAt(edgeIndex) == rootChildren.get(i).getEdge()) {
-				edgeFound = true;
-				newRoot = rootChildren.get(i);
+		// base case
+		// possible alternate base case (edgeIndex == word.length() - 1
+		// if (root.getData().equals(word)) {
+		if (edgeIndex == word.length() - 1) {
+			root.setIsPartial();
+		} else {
+			Node newRoot = null;
+			ArrayList<Node> rootChildren = root.getChildren();
+
+			boolean edgeFound = false;
+			if (rootChildren != null) {
+				for (int i = 0; i < rootChildren.size() && edgeFound == false; i++) {
+					if (rootChildren.get(i).getEdge() == word.charAt(edgeIndex)) {
+						newRoot = rootChildren.get(i);
+						edgeFound = true;
+					}
+				}
 			}
+			if (!edgeFound) {
+				newRoot = new Node(word.substring(0, edgeIndex + 1));
+			}
+			root.addChild(newRoot);
+			addWord(newRoot, word, edgeIndex + 1);
 		}
-		if (!edgeFound) {
-			newRoot = new Node(word.charAt(edgeIndex), word.substring(0, edgeIndex++));
-			rootChildren.add(newRoot);
-			
-		}
-		addWord(newRoot, word, edgeIndex++);
 	}
 
 	public boolean spelledCorrectly(String word) {
 		boolean found = false;
+
+		return findWord(root, word);
+	}
+
+	private boolean findWord(Node root, String word) {
+		boolean found = false;
+		if (root.getData().equals(word) && !root.isPartial()) {
+			found = true;
+		} else {
+			ArrayList<Node> rootChildren = root.getChildren();
+			Node newRoot = null;
+
+			if (rootChildren != null) {
+				boolean edgeFound = false;
+				for (int i = 0; i < rootChildren.size() && edgeFound == false; i++) {
+					if (word.equals(rootChildren.get(i).getData())) {
+						if(!rootChildren.get(i).isPartial()) {
+							found = true;
+						}
+					} else if (word.startsWith(rootChildren.get(i).getData())) {
+						newRoot = rootChildren.get(i);
+						edgeFound = true;
+						found = findWord(newRoot, word);
+					}
+				}
+			}
+		}
 
 		return found;
 	}
@@ -89,25 +125,31 @@ public class SpellChecker {
 
 	private class Node {
 
-		private LinkedList<Node> children;
+		private ArrayList<Node> children;
 		private String word;
 		private char edgeLetter;
 		private boolean isPartial;
 
 		Node() {
+			children = null;
+			word = "";
 		}
 
-		Node(char edgeLetter, String word) {
-			this.edgeLetter = edgeLetter;
-			word = word;
-			isPartial = lexicon.contains(word);
+		Node(String word) {
+			children = new ArrayList<Node>();
+			this.word = word;
+			edgeLetter = word.charAt(word.length() - 1);
+			isPartial = true;
 		}
 
 		public void addChild(Node newChild) {
+			if (children == null) {
+				children = new ArrayList<Node>();
+			}
 			children.add(newChild);
 		}
 
-		public LinkedList<Node> getChildren() {
+		public ArrayList<Node> getChildren() {
 			return children;
 		}
 
@@ -118,8 +160,13 @@ public class SpellChecker {
 		public String getData() {
 			return word;
 		}
+
 		public char getEdge() {
 			return edgeLetter;
+		}
+
+		public void setIsPartial() {
+			isPartial = false;
 		}
 
 	}
