@@ -9,7 +9,7 @@ public class Milestone2 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		File file = new File("resources\\lexicon.txt");
+		File file = new File("resources\\small_lex.txt");
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(file);
@@ -24,8 +24,16 @@ public class Milestone2 {
 		}
 		
 		SpellChecker spellChecker = new SpellChecker(lex);
-		boolean thisFound = spellChecker.spelledCorrectly("tod");
+		boolean thisFound = spellChecker.spelledCorrectly("thi");
+		boolean becauseFound = spellChecker.spelledCorrectly("becaus");
+		boolean todayFound = spellChecker.spelledCorrectly("toda");
+		boolean catFound = spellChecker.spelledCorrectly("ca");
+		boolean atFound = spellChecker.spelledCorrectly("a");
 		System.out.println(thisFound);
+		System.out.println(becauseFound);
+		System.out.println(todayFound);
+		System.out.println(catFound);
+		System.out.println(atFound);
 	}
 
 }

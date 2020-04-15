@@ -26,8 +26,8 @@ public class SpellChecker {
 	private void addWord(Node root, String word, int edgeIndex) {
 		// base case
 		// possible alternate base case (edgeIndex == word.length() - 1
-		// if (root.getData().equals(word)) {
-		if (edgeIndex == word.length() - 1) {
+		//if (edgeIndex == word.length() - 1) {
+		if (root.getData().equals(word)) {
 			root.setIsPartial();
 		} else {
 			Node newRoot = null;
